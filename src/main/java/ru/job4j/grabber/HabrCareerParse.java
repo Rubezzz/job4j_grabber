@@ -5,16 +5,47 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.job4j.grabber.utils.DateTimeParser;
 import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-public class HabrCareerParse {
+public class HabrCareerParse implements Parse {
 
+    private final DateTimeParser dateTimeParser;
     private static final String SOURCE_LINK = "https://career.habr.com";
-
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer", SOURCE_LINK);
+
+    public HabrCareerParse(DateTimeParser dateTimeParser) {
+        this.dateTimeParser = dateTimeParser;
+    }
+
+    @Override
+    public List<Post> list(String link) {
+        List<Post> rsl = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            String pageLink = String.format("%s%s%s", link, "/vacancies/java_developer/?page=", i);
+            try {
+                Connection connection = Jsoup.connect(pageLink);
+                Document document = connection.get();
+                Elements rows = document.select(".vacancy-card__inner");
+                rows.forEach(row -> {
+                    Element titleElement = row.select(".vacancy-card__title").first();
+                    Element linkElement = titleElement.child(0);
+                    String vacancyName = titleElement.text();
+                    String linkVacancy = String.format("%s%s", link, linkElement.attr("href"));
+                    String date = row.select(".basic-date").attr("datetime");
+                    rsl.add(new Post(vacancyName, linkVacancy, retrieveDescription(linkVacancy), dateTimeParser.parse(date)));
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return rsl;
+    }
 
     private String retrieveDescription(String link) {
         String rsl = "";
