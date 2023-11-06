@@ -1,11 +1,6 @@
 package ru.job4j.grabber;
 
-import ru.job4j.quartz.AlertRabbit;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -85,28 +80,6 @@ public class PsqlStore implements Store {
     public void close() throws Exception {
         if (cnn != null) {
             cnn.close();
-        }
-    }
-
-    public static void main(String[] args) {
-        Properties properties = AlertRabbit.loadProperties("grabber.properties");
-        try (Store store = new PsqlStore(properties)) {
-            store.save(new Post(
-                    "Java разработчик",
-                    "habr.com/afdsdsf",
-                    "SAFDdsaFsadf sa dfsad f",
-                    LocalDateTime.now()));
-            store.save(new Post(
-                    "God Java разработчик",
-                    "habr.com/afdsdafdsdsasf",
-                    "SAFDdsaFsadf sa dfsad fsad as f",
-                    LocalDateTime.now()));
-            List<Post> rsl = store.getAll();
-            rsl.forEach(System.out::println);
-            System.out.println("=========================");
-            System.out.println(store.findById(1));
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

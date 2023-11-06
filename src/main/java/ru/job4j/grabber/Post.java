@@ -25,9 +25,6 @@ public class Post {
         this.created = created;
     }
 
-    public Post() {
-    }
-
     public int getId() {
         return id;
     }
