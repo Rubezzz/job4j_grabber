@@ -49,12 +49,7 @@ public class PsqlStore implements Store {
         try (Statement ps = cnn.createStatement()) {
             ResultSet resultSet = ps.executeQuery("SELECT * FROM grabber.post");
             while (resultSet.next()) {
-                rsl.add(new Post(
-                        resultSet.getInt(1),
-                        resultSet.getString(2),
-                        resultSet.getString(3),
-                        resultSet.getString(4),
-                        resultSet.getTimestamp(5).toLocalDateTime()));
+                rsl.add(createPost(resultSet));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,17 +64,21 @@ public class PsqlStore implements Store {
             ps.setInt(id, 1);
             ResultSet resultSet = ps.executeQuery();
             if (resultSet.next()) {
-                rsl = new Post(
-                        resultSet.getInt(1),
-                        resultSet.getString(2),
-                        resultSet.getString(3),
-                        resultSet.getString(4),
-                        resultSet.getTimestamp(5).toLocalDateTime());
+                rsl = createPost(resultSet);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return rsl;
+    }
+
+    private Post createPost(ResultSet resultSet) throws Exception {
+        return new Post(
+                    resultSet.getInt(1),
+                    resultSet.getString(2),
+                    resultSet.getString(3),
+                    resultSet.getString(4),
+                    resultSet.getTimestamp(5).toLocalDateTime());
     }
 
     @Override
