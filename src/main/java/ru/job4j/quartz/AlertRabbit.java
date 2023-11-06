@@ -42,7 +42,7 @@ public class AlertRabbit {
         }
     }
 
-    private static Properties loadProperties(String file) {
+    public static Properties loadProperties(String file) {
         Properties config = new Properties();
         try (InputStream in = AlertRabbit.class.getClassLoader().getResourceAsStream(file)) {
             config.load(in);
